@@ -29,4 +29,5 @@ dependencies {
     })
 
     implementation project(path: ':tagview')
+    //implementation 'org.jetbrains:annotations-java5:15.0'
 }

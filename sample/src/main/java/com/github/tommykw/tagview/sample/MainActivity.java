@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.github.tommykw.tagview.DataTransform;
 import com.github.tommykw.tagview.TagView;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
         TagView<Item> tags = findViewById(R.id.tagview);
         tags.setTags(list, new DataTransform<Item>() {
-            @NotNull
             @Override
             public String transfer(Item item) {
                 return item.getName();

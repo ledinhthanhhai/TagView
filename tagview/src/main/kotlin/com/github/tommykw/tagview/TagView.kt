@@ -1,5 +1,6 @@
 package com.github.tommykw.tagview
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -21,16 +22,20 @@ class TagView<T> @JvmOverloads constructor(
     private val verticalSpacing: Int
     private val textAppearanceId: Int
     private val textColorId: Int
+    private val selectedTextColorId: Int
     private val textFontSize: Int
     private val backgroundColorId: Int
+    private val selectedBackgroundColorId: Int
     private val cornerRadius: Float
     private val leftDrawableId: Int
     private val leftDrawablePadding: Int
     private val sortType: Long
     private val strokeWidth: Int
     private val strokeColor: Int
+    private val selectedStrokeColor: Int
 
     private var tagClickListener: TagClickListener<T>? = null
+    private var selectedItem: T? = null
 
     init {
         val styledAttrs = context.obtainStyledAttributes(attrs, R.styleable.TagView)
@@ -38,14 +43,17 @@ class TagView<T> @JvmOverloads constructor(
         verticalSpacing = styledAttrs.getDimension(R.styleable.TagView_vertical_spacing, 1f).toInt()
         textAppearanceId = styledAttrs.getResourceId(R.styleable.TagView_text_style, -1)
         textColorId = styledAttrs.getColor(R.styleable.TagView_text_color, ContextCompat.getColor(context, R.color.white))
+        selectedTextColorId = styledAttrs.getColor(R.styleable.TagView_selected_text_color, ContextCompat.getColor(context, R.color.red))
         textFontSize = styledAttrs.getDimension(R.styleable.TagView_text_font_size, 1f).toInt()
         backgroundColorId = styledAttrs.getColor(R.styleable.TagView_background_color, ContextCompat.getColor(context, R.color.white))
+        selectedBackgroundColorId = styledAttrs.getColor(R.styleable.TagView_selected_background_color, ContextCompat.getColor(context, R.color.white))
         cornerRadius = styledAttrs.getDimension(R.styleable.TagView_corner_radius, 60f)
         leftDrawableId = styledAttrs.getResourceId(R.styleable.TagView_left_drawable, -1)
         leftDrawablePadding = styledAttrs.getDimension(R.styleable.TagView_left_drawable_padding, 1f).toInt()
         sortType = styledAttrs.getInt(R.styleable.TagView_sort_type, -1).toLong()
         strokeWidth = styledAttrs.getDimension(R.styleable.TagView_stroke_width, 1f).toInt()
         strokeColor = styledAttrs.getColor(R.styleable.TagView_stroke_color, ContextCompat.getColor(context, R.color.white))
+        selectedStrokeColor = styledAttrs.getColor(R.styleable.TagView_selected_stroke_color, ContextCompat.getColor(context, R.color.white))
 
         styledAttrs.recycle()
     }
@@ -136,6 +144,7 @@ class TagView<T> @JvmOverloads constructor(
         requestLayout()
     }
 
+    @SuppressLint("NewApi")
     private fun setTag(item: T, transform: DataTransform<T>) {
         val chips = (ContextCompat.getDrawable(context, R.drawable.chips) as GradientDrawable).also {
             it.cornerRadius = cornerRadius
@@ -149,6 +158,7 @@ class TagView<T> @JvmOverloads constructor(
             text = transform.transfer(item)
             textSize = textFontSize.toFloat()
             setOnTouchListener { _, _ -> false }
+
             if (textAppearanceId != -1) {
                 setTextAppearanceV2(context, textAppearanceId)
             }
@@ -162,6 +172,23 @@ class TagView<T> @JvmOverloads constructor(
             }
 
             setOnClickListener {
+                tags.forEach { textView ->
+                    textView.setTextColor(textColorId)
+                    val chips1 = (ContextCompat.getDrawable(context, R.drawable.chips) as GradientDrawable).also { it1 ->
+                        it1.cornerRadius = cornerRadius
+                        it1.setColor(backgroundColorId)
+                        it1.setStroke(strokeWidth, strokeColor)
+                    }
+                    textView.background = chips1
+                }
+
+                val chips = (ContextCompat.getDrawable(context, R.drawable.chips) as GradientDrawable).also {
+                    it.cornerRadius = cornerRadius
+                    it.setColor(selectedBackgroundColorId)
+                    it.setStroke(strokeWidth, selectedStrokeColor)
+                }
+                background = chips
+                setTextColor(selectedTextColorId)
                 tagClickListener?.onTagClick(item)
             }
         }
