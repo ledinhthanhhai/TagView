@@ -1,5 +1,6 @@
 package com.github.tommykw.tagview.sample;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -23,18 +24,25 @@ public class MainActivity extends AppCompatActivity {
         list.add(new Item(2, "boy"));
         list.add(new Item(3, "natural birth"));
         list.add(new Item(4, "pregnancy"));
+        list.add(new Item(5, "reset"));
 
-        TagView<Item> tags = findViewById(R.id.tagview);
+        final TagView<Item> tags = findViewById(R.id.tagview);
         tags.setTags(list, new DataTransform<Item>() {
             @Override
+            @NonNull
             public String transfer(Item item) {
                 return item.getName();
             }
         });
+
         tags.setClickListener(new TagView.TagClickListener<Item>() {
             @Override
             public void onTagClick(Item item) {
-                item.getId();
+
+                int id = item.getId();
+                if(id == 5){
+                    tags.resetView();
+                }
             }
         });
     }

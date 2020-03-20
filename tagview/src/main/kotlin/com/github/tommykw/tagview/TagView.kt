@@ -35,7 +35,6 @@ class TagView<T> @JvmOverloads constructor(
     private val selectedStrokeColor: Int
 
     private var tagClickListener: TagClickListener<T>? = null
-    private var selectedItem: T? = null
 
     init {
         val styledAttrs = context.obtainStyledAttributes(attrs, R.styleable.TagView)
@@ -200,6 +199,20 @@ class TagView<T> @JvmOverloads constructor(
     fun clear() {
         tags.clear()
         removeAllViews()
+    }
+
+    fun resetView(){
+        if(tags.size > 0){
+            tags.forEach { textView ->
+                textView.setTextColor(textColorId)
+                val chips1 = (ContextCompat.getDrawable(context, R.drawable.chips) as GradientDrawable).also { it1 ->
+                    it1.cornerRadius = cornerRadius
+                    it1.setColor(backgroundColorId)
+                    it1.setStroke(strokeWidth, strokeColor)
+                }
+                textView.background = chips1
+            }
+        }
     }
 
     fun setClickListener(listener: TagClickListener<T>) {
